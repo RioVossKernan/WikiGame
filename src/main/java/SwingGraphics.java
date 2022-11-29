@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 
+
 public class SwingGraphics implements ActionListener {
     private JFrame mainFrame;
 
@@ -30,7 +31,8 @@ public class SwingGraphics implements ActionListener {
     private int HEIGHT=700;
 
     public SwingGraphics() {
-        prepareGUI();
+        scrapePageForLinks(convertToApiURL("Ryan Reynolds"));
+        //prepareGUI();
     }
 
     private void prepareGUI() {
@@ -108,12 +110,11 @@ public class SwingGraphics implements ActionListener {
 
     public boolean findTarget(String URL, String path, int depth){
         ArrayList<String> linksOnPage = scrapePageForLinks(URL);
-        ArrayList<String> linksVisited = new ArrayList<>();
 
         //BASE CASE (Success)
         if(URL.equals(targetURL)){
             path += "\n" + URL;
-            //System.out.println("\nPATH TO TARGET URL:" + path);
+            System.out.println("\nPATH TO TARGET URL:" + path);
             ta.setText("\nPATH TO TARGET URL:" + path);
             return true;
 
@@ -144,27 +145,21 @@ public class SwingGraphics implements ActionListener {
                 URL url = new URL(pURL);
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(url.openStream()));
-                String line;
+                String line = reader.readLine();
 
-                //Read line-by-line until end
-                while ((line = reader.readLine()) != null) {
-                    //get Wiki Links
-                    int index = line.indexOf("href=\"/wiki");
-                    while(index > 0){
+                int index = 0;
+                while((index = line.indexOf("*",index+1)) != -1){
+                    String link = line.substring(index+4,line.indexOf("\"",index+5));
+                    System.out.println(link);
 
-                        int endOfLink = line.indexOf("\"",index+13);
-                        String link = line.substring(index + 6,endOfLink);
+//                    if (!link.contains(":") && !link.contains("#") && !link.contains("Main_Page")) { //some links are .json or just #. This avoids that
+//                        links.add(wikiLinkToURL(link));
+//                    }
 
-                        if (!link.contains(":") && !link.contains("#") && !link.contains("Main_Page")) { //some links are .json or just #. This avoids that
-                            links.add(wikiLinkToURL(link));
-                        }
-
-                        index = line.indexOf("href=\"/wiki",index+13);
-                    }
                 }
                 reader.close();
             } catch (Exception ex) {
-                ta.setText(ex + "");
+                System.out.println(ex+"");
             }
         return links;
     }
@@ -183,16 +178,13 @@ public class SwingGraphics implements ActionListener {
                 ta.setText("");
 
                 String pURL = startURLta.getText();
-                if(!pURL.contains("https://en.wikipedia.org/wiki")){
-                    pURL = "https://en.wikipedia.org/wiki/" + pURL;
-                }
 
                 targetURL = endURLta.getText();
                 if(!targetURL.contains("https://en.wikipedia.org/wiki")){
                     targetURL = "https://en.wikipedia.org/wiki/" + targetURL;
                 }
 
-                findTarget(pURL, "", 1);
+                findTarget(pURL, "", 2);
                 System.out.println("search ended");
             }
         }
@@ -201,4 +193,10 @@ public class SwingGraphics implements ActionListener {
     public String wikiLinkToURL(String wikiLink){
         return "https://en.wikipedia.org".concat(wikiLink);
     }
+
+    public String convertToApiURL(String titleOfPage){
+        String link = titleOfPage.replaceAll(" ", "_");
+        return "https://en.wikipedia.org/w/api.php?action=parse&prop=links&format=json&page=".concat(link);
+    }
+
 }
