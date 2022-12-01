@@ -33,6 +33,7 @@ public class SwingGraphics implements ActionListener {
     public SwingGraphics() {
         //scrapePageForLinks(convertToApiURL("Ryan Reynolds"));
         //prepareGUI();
+        targetURL = "115 series";
         findTarget("train","",1);
     }
 
@@ -116,11 +117,11 @@ public class SwingGraphics implements ActionListener {
         if(URL.equals(targetURL)){
             path += "\n" + URL;
             System.out.println("\nPATH TO TARGET URL:" + path);
-            ta.setText("\nPATH TO TARGET URL:" + path);
+            //ta.setText("\nPATH TO TARGET URL:" + path);
             return true;
 
         //BASE CASE (Max Depth)
-        }else if(depth == 2) {
+        }else if(depth > 2) {
             return false;
 
         //CONTINUE CASE
