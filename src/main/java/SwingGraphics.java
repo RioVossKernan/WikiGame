@@ -117,7 +117,6 @@ public class SwingGraphics implements ActionListener {
         mainFrame.setVisible(true);
     }
 
-
     public void recursiveBFS(Queue<Node> q, ArrayList<String> discovered) {
         if (q.isEmpty()) { //terminate
             return;
@@ -140,7 +139,7 @@ public class SwingGraphics implements ActionListener {
             return; //terminate
 
         }else{
-            //System.out.println(v.URL + " ");
+            System.out.println(v.URL + " ");
         }
 
         // do for every connection (v, u)
@@ -155,39 +154,6 @@ public class SwingGraphics implements ActionListener {
 
         recursiveBFS( q, discovered);
     }
-
-//
-//    public boolean findTarget(String URL, String path, int depth){
-//        ArrayList<String> linksOnPage = scrapePageForLinks(URL);
-//
-//        //BASE CASE (Success)
-//        if(URL.equals(targetURL)){
-//            path += "\n" + URL;
-//            System.out.println("\nPATH TO TARGET URL:" + path);
-//            //ta.setText("\nPATH TO TARGET URL:" + path);
-//            return true;
-//
-//        //BASE CASE (Max Depth)
-//        }else if(depth > 2) {
-//            return false;
-//
-//        //CONTINUE CASE
-//        }else{
-//            for(String link: linksOnPage){
-//                if(!path.contains(link)) {
-//                    //ta.append("begin at " + depth + " depth: " + link + "\n");
-//                    //ta.update(ta.getGraphics());
-//                    System.out.println(depth + " depth: " +  link);
-//
-//                    if(findTarget(link, path + "\n" + URL, depth+1)){
-//                        return true;
-//                    }
-//                }
-//            }
-//            return false;
-//        }
-//    }
-
 
     public ArrayList<String> scrapePageForLinks(Node page){
         ArrayList<String> links = new ArrayList<>();
@@ -247,8 +213,56 @@ public class SwingGraphics implements ActionListener {
         }
     }
 
+}
+
+
+
+//CODE DUMP
+//**********************************************************************
+/*
+
     public String wikiLinkToURL(String wikiLink){
         return "https://en.wikipedia.org".concat(wikiLink);
     }
 
-}
+
+
+
+    public boolean findTarget(String URL, String path, int depth){
+        ArrayList<String> linksOnPage = scrapePageForLinks(URL);
+
+        //BASE CASE (Success)
+        if(URL.equals(targetURL)){
+            path += "\n" + URL;
+            System.out.println("\nPATH TO TARGET URL:" + path);
+            //ta.setText("\nPATH TO TARGET URL:" + path);
+            return true;
+
+        //BASE CASE (Max Depth)
+        }else if(depth > 2) {
+            return false;
+
+        //CONTINUE CASE
+        }else{
+            for(String link: linksOnPage){
+                if(!path.contains(link)) {
+                    //ta.append("begin at " + depth + " depth: " + link + "\n");
+                    //ta.update(ta.getGraphics());
+                    System.out.println(depth + " depth: " +  link);
+
+                    if(findTarget(link, path + "\n" + URL, depth+1)){
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+
+
+
+
+
+
+
+ */
