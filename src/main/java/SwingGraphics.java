@@ -31,8 +31,8 @@ public class SwingGraphics implements ActionListener {
     private int HEIGHT=700;
 
     public SwingGraphics() {
-        scrapePageForLinks(convertToApiURL("Ryan Reynolds"));
-        //prepareGUI();
+        //scrapePageForLinks(convertToApiURL("Ryan Reynolds"));
+        prepareGUI();
     }
 
     private void prepareGUI() {
@@ -142,7 +142,7 @@ public class SwingGraphics implements ActionListener {
         ArrayList<String> links = new ArrayList<>();
             try {
                 //Set up inputStream
-                URL url = new URL(pURL);
+                URL url = new URL("https://en.wikipedia.org/w/api.php?action=query&prop=links&format=json&pllimit=max&titles=" + pURL);
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(url.openStream()));
                 String line = reader.readLine();
@@ -150,11 +150,13 @@ public class SwingGraphics implements ActionListener {
                 int index = 0;
                 while((index = line.indexOf("*",index+1)) != -1){
                     String link = line.substring(index+4,line.indexOf("\"",index+5));
-                    System.out.println(link);
 
-//                    if (!link.contains(":") && !link.contains("#") && !link.contains("Main_Page")) { //some links are .json or just #. This avoids that
-//                        links.add(wikiLinkToURL(link));
-//                    }
+                    if (!link.contains(":") && !link.contains("#") && !link.contains("Main_Page")
+                            && !link.contains("Category:") && !link.contains("Template talk:")
+                            && !link.contains("pURL") && !link.contains("Portal:") && !link.contains("Wikipedia:")){
+                        links.add(wikiLinkToURL(link));
+                        System.out.println(link);
+                    }
 
                 }
                 reader.close();
@@ -180,9 +182,6 @@ public class SwingGraphics implements ActionListener {
                 String pURL = startURLta.getText();
 
                 targetURL = endURLta.getText();
-                if(!targetURL.contains("https://en.wikipedia.org/wiki")){
-                    targetURL = "https://en.wikipedia.org/wiki/" + targetURL;
-                }
 
                 findTarget(pURL, "", 2);
                 System.out.println("search ended");
