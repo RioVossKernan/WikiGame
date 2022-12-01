@@ -25,6 +25,8 @@ public class SwingGraphics implements ActionListener {
     private JTextField startURLta;
     private JTextField endURLta;
 
+    private API api = new API();
+
     public String targetURL;
 
     private int WIDTH=800;
@@ -36,7 +38,7 @@ public class SwingGraphics implements ActionListener {
 
         Node origin = new Node(null, startPage);
         Queue<Node> queue = new LinkedList<>();
-        for(String i: scrapePageForLinks(origin))
+        for(String i: scrapeAPIForLinks(origin))
             queue.add(new Node(origin, i));
 
         ArrayList<String> discovered = new ArrayList<>();
@@ -143,7 +145,7 @@ public class SwingGraphics implements ActionListener {
         }
 
         // do for every connection (v, u)
-        for(String u: scrapePageForLinks(v)) {
+        for(String u: scrapeAPIForLinks(v)) {
             if (!discovered.contains(u)) {
                 // mark it as discovered and enqueue it
                 discovered.add(u);
@@ -190,6 +192,30 @@ public class SwingGraphics implements ActionListener {
         return links;
     }
 
+    public ArrayList<String> scrapeAPIForLinks(Node page){
+        ArrayList<String> links = new ArrayList<>();
+
+        String convertedTitle = page.URL.replaceAll(" ", "_");
+        String line = api.getLinksFromPage(convertedTitle).body().toString();
+
+        int index = line.indexOf("\"title\":\"", line.indexOf("\"links\":")) + 9;
+        while(index > 20){
+
+            String link = line.substring(index,line.indexOf("\"",index+1));
+
+            if (!link.contains(":") && !link.contains("#") && !link.contains("Main_Page")
+                    && !link.contains("Category:") && !link.contains("Template talk:")
+                    && !link.contains("page") && !link.contains("Portal:") && !link.contains("Wikipedia:")){
+
+                links.add(link);
+                //System.out.println(link);
+            }
+
+            index = line.indexOf("\"title\":\"", index) + 9;
+        }
+
+        return links;
+    }
 
 
     @Override
