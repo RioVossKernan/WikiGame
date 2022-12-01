@@ -12,7 +12,7 @@ public class API {
     public HttpResponse getLinksFromPage (String page){
         try{
             HttpRequest queryRequest = HttpRequest.newBuilder()
-                    .uri(new URI("https://en.wikipedia.org/w/api.php?action=query&prop=links&pllimit=max&format=json&titles=" + page))
+                    .uri(new URI("https://en.wikipedia.org/w/api.php?action=query&prop=links&pllimit=max&format=xml&titles=" + page))
                     .header("RioVK", "?")
                     .GET()
                     .build();

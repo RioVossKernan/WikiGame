@@ -198,7 +198,7 @@ public class SwingGraphics implements ActionListener {
         String convertedTitle = page.URL.replaceAll(" ", "_");
         String line = api.getLinksFromPage(convertedTitle).body().toString();
 
-        int index = line.indexOf("\"title\":\"", line.indexOf("\"links\":")) + 9;
+        int index = line.indexOf("title=\"", line.indexOf("<links>")) + 7;
         while(index > 20){
 
             String link = line.substring(index,line.indexOf("\"",index+1));
@@ -211,7 +211,7 @@ public class SwingGraphics implements ActionListener {
                 //System.out.println(link);
             }
 
-            index = line.indexOf("\"title\":\"", index) + 9;
+            index = line.indexOf("title=\"", index) + 7;
         }
 
         return links;
