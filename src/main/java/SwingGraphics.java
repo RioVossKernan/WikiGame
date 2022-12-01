@@ -31,17 +31,18 @@ public class SwingGraphics implements ActionListener {
     private int HEIGHT=700;
 
     public SwingGraphics() {
-        //scrapePageForLinks(convertToApiURL("Ryan Reynolds"));
-        //prepareGUI();
-        //findTarget("train","",1);
+        targetURL = "Tom Hanks";
+        Node origin = new Node(null,"Ryan Reynolds");
 
-        targetURL = "20th Century Fox";
-        String url = "Ryan Reynolds";
-        Queue<String> queue = new LinkedList<>(scrapePageForLinks(url));
+        Queue<Node> queue = new LinkedList<>();
+        for(String i: scrapePageForLinks(origin)){
+            queue.add(new Node(origin,i));
+        }
+
         ArrayList<String> discovered = new ArrayList<>();
-        discovered.add(url);
+        discovered.add(origin.URL);
 
-        recursiveBFS("",queue, discovered);
+        recursiveBFS(queue, discovered);
     }
 
     private void prepareGUI() {
@@ -117,74 +118,81 @@ public class SwingGraphics implements ActionListener {
     }
 
 
-    public void recursiveBFS(String path, Queue<String> q, ArrayList<String> discovered) {
-        if (q.isEmpty()) {
+    public void recursiveBFS(Queue<Node> q, ArrayList<String> discovered) {
+        if (q.isEmpty()) { //terminate
             return;
         }
 
         // dequeue front node and print it
-        String v = q.poll();
-        path += v + "\n";
+        Node v = q.poll();
 
-        if(v.equalsIgnoreCase(targetURL)){
-            System.out.println("\n" + "PATH: \n" + path);
-            return;
+        if(v.URL.equalsIgnoreCase(targetURL)){
+            //PRINT PATH
+            System.out.println("\nDONE\n\nPATH:");
+            //go up the family tree and print the path
+            Node parent = v.parent;
+            while(parent != null){
+                System.out.println(parent.URL);
+                parent = parent.parent;
+            }
+            System.out.println(targetURL);
+
+            return; //terminate
 
         }else{
-            System.out.println(v + " ");
+            System.out.println(v.URL + " ");
         }
 
-
-
-
-        // do for every edge (v, u)
+        // do for every connection (v, u)
         for(String u: scrapePageForLinks(v)) {
             if (!discovered.contains(u)) {
                 // mark it as discovered and enqueue it
                 discovered.add(u);
-                q.add(u);
+                Node child = new Node(v,u);
+                q.add(child);
             }
         }
 
-        recursiveBFS(path, q, discovered);
+        recursiveBFS( q, discovered);
     }
 
-    public boolean findTarget(String URL, String path, int depth){
-        ArrayList<String> linksOnPage = scrapePageForLinks(URL);
+//
+//    public boolean findTarget(String URL, String path, int depth){
+//        ArrayList<String> linksOnPage = scrapePageForLinks(URL);
+//
+//        //BASE CASE (Success)
+//        if(URL.equals(targetURL)){
+//            path += "\n" + URL;
+//            System.out.println("\nPATH TO TARGET URL:" + path);
+//            //ta.setText("\nPATH TO TARGET URL:" + path);
+//            return true;
+//
+//        //BASE CASE (Max Depth)
+//        }else if(depth > 2) {
+//            return false;
+//
+//        //CONTINUE CASE
+//        }else{
+//            for(String link: linksOnPage){
+//                if(!path.contains(link)) {
+//                    //ta.append("begin at " + depth + " depth: " + link + "\n");
+//                    //ta.update(ta.getGraphics());
+//                    System.out.println(depth + " depth: " +  link);
+//
+//                    if(findTarget(link, path + "\n" + URL, depth+1)){
+//                        return true;
+//                    }
+//                }
+//            }
+//            return false;
+//        }
+//    }
 
-        //BASE CASE (Success)
-        if(URL.equals(targetURL)){
-            path += "\n" + URL;
-            System.out.println("\nPATH TO TARGET URL:" + path);
-            //ta.setText("\nPATH TO TARGET URL:" + path);
-            return true;
 
-        //BASE CASE (Max Depth)
-        }else if(depth > 2) {
-            return false;
-
-        //CONTINUE CASE
-        }else{
-            for(String link: linksOnPage){
-                if(!path.contains(link)) {
-                    //ta.append("begin at " + depth + " depth: " + link + "\n");
-                    //ta.update(ta.getGraphics());
-                    System.out.println(depth + " depth: " +  link);
-
-                    if(findTarget(link, path + "\n" + URL, depth+1)){
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-    }
-
-
-    public ArrayList<String> scrapePageForLinks(String pURL){
+    public ArrayList<String> scrapePageForLinks(Node page){
         ArrayList<String> links = new ArrayList<>();
 
-            String convertedTitle = pURL.replaceAll(" ", "_");
+            String convertedTitle = page.URL.replaceAll(" ", "_");
             String URL = "https://en.wikipedia.org/w/api.php?action=query&prop=links&format=json&pllimit=max&titles=".concat(convertedTitle);
 
             try {
@@ -201,7 +209,7 @@ public class SwingGraphics implements ActionListener {
 
                     if (!link.contains(":") && !link.contains("#") && !link.contains("Main_Page")
                             && !link.contains("Category:") && !link.contains("Template talk:")
-                            && !link.contains("pURL") && !link.contains("Portal:") && !link.contains("Wikipedia:")){
+                            && !link.contains("page") && !link.contains("Portal:") && !link.contains("Wikipedia:")){
 
                         links.add(link);
                         //System.out.println(link);
@@ -233,7 +241,7 @@ public class SwingGraphics implements ActionListener {
 
                 targetURL = endURLta.getText();
 
-                findTarget(pURL, "", 2);
+                //findTarget(pURL, "", 2);
                 System.out.println("search ended");
             }
         }
