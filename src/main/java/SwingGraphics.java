@@ -31,13 +31,13 @@ public class SwingGraphics implements ActionListener {
     private int HEIGHT=700;
 
     public SwingGraphics() {
-        targetURL = "Tom Hanks";
-        Node origin = new Node(null,"Ryan Reynolds");
+        targetURL = "Tom Holland";
+        String startPage = "Ryan Reynolds";
 
+        Node origin = new Node(null, startPage);
         Queue<Node> queue = new LinkedList<>();
-        for(String i: scrapePageForLinks(origin)){
-            queue.add(new Node(origin,i));
-        }
+        for(String i: scrapePageForLinks(origin))
+            queue.add(new Node(origin, i));
 
         ArrayList<String> discovered = new ArrayList<>();
         discovered.add(origin.URL);
@@ -140,7 +140,7 @@ public class SwingGraphics implements ActionListener {
             return; //terminate
 
         }else{
-            System.out.println(v.URL + " ");
+            //System.out.println(v.URL + " ");
         }
 
         // do for every connection (v, u)
