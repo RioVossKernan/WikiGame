@@ -5,7 +5,7 @@ import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.*;
 
 
 public class SwingGraphics implements ActionListener {
@@ -33,8 +33,15 @@ public class SwingGraphics implements ActionListener {
     public SwingGraphics() {
         //scrapePageForLinks(convertToApiURL("Ryan Reynolds"));
         //prepareGUI();
-        targetURL = "115 series";
-        findTarget("train","",1);
+        //findTarget("train","",1);
+
+        targetURL = "20th Century Fox";
+        String url = "Ryan Reynolds";
+        Queue<String> queue = new LinkedList<>(scrapePageForLinks(url));
+        ArrayList<String> discovered = new ArrayList<>();
+        discovered.add(url);
+
+        recursiveBFS("",queue, discovered);
     }
 
     private void prepareGUI() {
@@ -109,6 +116,38 @@ public class SwingGraphics implements ActionListener {
         mainFrame.setVisible(true);
     }
 
+
+    public void recursiveBFS(String path, Queue<String> q, ArrayList<String> discovered) {
+        if (q.isEmpty()) {
+            return;
+        }
+
+        // dequeue front node and print it
+        String v = q.poll();
+        path += v + "\n";
+
+        if(v.equalsIgnoreCase(targetURL)){
+            System.out.println("\n" + "PATH: \n" + path);
+            return;
+
+        }else{
+            System.out.println(v + " ");
+        }
+
+
+
+
+        // do for every edge (v, u)
+        for(String u: scrapePageForLinks(v)) {
+            if (!discovered.contains(u)) {
+                // mark it as discovered and enqueue it
+                discovered.add(u);
+                q.add(u);
+            }
+        }
+
+        recursiveBFS(path, q, discovered);
+    }
 
     public boolean findTarget(String URL, String path, int depth){
         ArrayList<String> linksOnPage = scrapePageForLinks(URL);
