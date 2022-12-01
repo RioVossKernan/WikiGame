@@ -31,8 +31,8 @@ public class SwingGraphics implements ActionListener {
     private int HEIGHT=700;
 
     public SwingGraphics() {
-        //scrapePageForLinks(convertToApiURL("Ryan Reynolds"));
-        prepareGUI();
+        scrapePageForLinks(convertToApiURL("Ryan Reynolds"));
+        //prepareGUI();
     }
 
     private void prepareGUI() {
@@ -128,7 +128,8 @@ public class SwingGraphics implements ActionListener {
                 if(!path.contains(link)) {
                     System.out.println("begin at " + depth + " depth: " + link);
                     ta.append("begin at " + depth + " depth: " + link + "\n");
-                    if(findTarget(link, path + "\n" + URL, depth-1)){
+                    jTextArea.update(jTextArea.getGraphics());
+                    if(findTarget(convertToApiURL(link), path + "\n" + URL, depth-1)){
                         return true;
                     }
                 }
@@ -142,22 +143,25 @@ public class SwingGraphics implements ActionListener {
         ArrayList<String> links = new ArrayList<>();
             try {
                 //Set up inputStream
-                URL url = new URL("https://en.wikipedia.org/w/api.php?action=query&prop=links&format=json&pllimit=max&titles=" + pURL);
+                URL url = new URL(pURL);
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(url.openStream()));
                 String line = reader.readLine();
 
-                int index = 0;
-                while((index = line.indexOf("*",index+1)) != -1){
-                    String link = line.substring(index+4,line.indexOf("\"",index+5));
+                int index = line.indexOf("\"title\":\"", line.indexOf("\"links\":")) + 9;
+                while(index > 20){
+
+                    String link = line.substring(index,line.indexOf("\"",index+1));
 
                     if (!link.contains(":") && !link.contains("#") && !link.contains("Main_Page")
                             && !link.contains("Category:") && !link.contains("Template talk:")
                             && !link.contains("pURL") && !link.contains("Portal:") && !link.contains("Wikipedia:")){
+
                         links.add(wikiLinkToURL(link));
                         System.out.println(link);
                     }
 
+                    index = line.indexOf("\"title\":\"", index) + 9;
                 }
                 reader.close();
             } catch (Exception ex) {
@@ -195,7 +199,7 @@ public class SwingGraphics implements ActionListener {
 
     public String convertToApiURL(String titleOfPage){
         String link = titleOfPage.replaceAll(" ", "_");
-        return "https://en.wikipedia.org/w/api.php?action=parse&prop=links&format=json&page=".concat(link);
+        return "https://en.wikipedia.org/w/api.php?action=query&prop=links&format=json&pllimit=max&titles=".concat(link);
     }
 
 }
