@@ -33,18 +33,18 @@ public class SwingGraphics implements ActionListener {
     private int HEIGHT=700;
 
     public SwingGraphics() {
-        targetURL = "Tom Holland";
-        String startPage = "Ryan Reynolds";
+        targetURL = "MrBeast";
+        String startPage = "Tom Hanks";
 
         Node origin = new Node(null, startPage);
         Queue<Node> queue = new LinkedList<>();
-        for(String i: scrapeAPIForLinks(origin))
+        for(String i: scrapePageForLinks(origin))
             queue.add(new Node(origin, i));
 
         ArrayList<String> discovered = new ArrayList<>();
         discovered.add(origin.URL);
 
-        recursiveBFS(queue, discovered);
+        recursiveForwardBFS(queue, discovered);
     }
 
     private void prepareGUI() {
@@ -119,7 +119,7 @@ public class SwingGraphics implements ActionListener {
         mainFrame.setVisible(true);
     }
 
-    public void recursiveBFS(Queue<Node> q, ArrayList<String> discovered) {
+    public void recursiveForwardBFS(Queue<Node> q, ArrayList<String> discovered) {
         if (q.isEmpty()) { //terminate
             return;
         }
@@ -141,11 +141,11 @@ public class SwingGraphics implements ActionListener {
             return; //terminate
 
         }else{
-            System.out.println(v.URL + " ");
+            //System.out.println(v.URL + " ");
         }
 
         // do for every connection (v, u)
-        for(String u: scrapeAPIForLinks(v)) {
+        for(String u: scrapePageForLinks(v)) {
             if (!discovered.contains(u)) {
                 // mark it as discovered and enqueue it
                 discovered.add(u);
@@ -154,8 +154,11 @@ public class SwingGraphics implements ActionListener {
             }
         }
 
-        recursiveBFS( q, discovered);
+        recursiveForwardBFS( q, discovered);
     }
+
+
+
 
     public ArrayList<String> scrapePageForLinks(Node page){
         ArrayList<String> links = new ArrayList<>();
