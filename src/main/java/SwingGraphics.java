@@ -33,18 +33,7 @@ public class SwingGraphics implements ActionListener {
     private int HEIGHT=700;
 
     public SwingGraphics() {
-        targetURL = "MrBeast";
-        String startPage = "Tom Hanks";
-
-        Node origin = new Node(null, startPage);
-        Queue<Node> queue = new LinkedList<>();
-        for(String i: scrapePageForLinks(origin))
-            queue.add(new Node(origin, i));
-
-        ArrayList<String> discovered = new ArrayList<>();
-        discovered.add(origin.URL);
-
-        recursiveForwardBFS(queue, discovered);
+        prepareGUI();
     }
 
     private void prepareGUI() {
@@ -129,19 +118,23 @@ public class SwingGraphics implements ActionListener {
 
         if(v.URL.equalsIgnoreCase(targetURL)){
             //PRINT PATH
+            ta.setText("");
             System.out.println("\nDONE\n\nPATH:");
+            ta.append("\nDONE\n\nPATH:\n");
             //go up the family tree and print the path
             Node parent = v.parent;
             while(parent != null){
                 System.out.println(parent.URL);
+                ta.append(parent.URL + "\n");
                 parent = parent.parent;
             }
             System.out.println(targetURL);
+            ta.append(targetURL);
 
             return; //terminate
 
         }else{
-            //System.out.println(v.URL + " ");
+            System.out.println(v.URL + " ");
         }
 
         // do for every connection (v, u)
@@ -156,8 +149,6 @@ public class SwingGraphics implements ActionListener {
 
         recursiveForwardBFS( q, discovered);
     }
-
-
 
 
     public ArrayList<String> scrapePageForLinks(Node page){
@@ -195,31 +186,6 @@ public class SwingGraphics implements ActionListener {
         return links;
     }
 
-    public ArrayList<String> scrapeAPIForLinks(Node page){
-        ArrayList<String> links = new ArrayList<>();
-
-        String convertedTitle = page.URL.replaceAll(" ", "_");
-        String line = api.getLinksFromPage(convertedTitle).body().toString();
-
-        int index = line.indexOf("title=\"", line.indexOf("<links>")) + 7;
-        while(index > 20){
-
-            String link = line.substring(index,line.indexOf("\"",index+1));
-
-            if (!link.contains(":") && !link.contains("#") && !link.contains("Main_Page")
-                    && !link.contains("Category:") && !link.contains("Template talk:")
-                    && !link.contains("page") && !link.contains("Portal:") && !link.contains("Wikipedia:")){
-
-                links.add(link);
-                //System.out.println(link);
-            }
-
-            index = line.indexOf("title=\"", index) + 7;
-        }
-
-        return links;
-    }
-
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -230,14 +196,22 @@ public class SwingGraphics implements ActionListener {
             String command = e.getActionCommand();
 
             if (command.equals("GO")) {
+                System.out.println("Go Pressed");
                 ta.setText("");
 
-                String pURL = startURLta.getText();
+                targetURL = startURLta.getText();
+                String startPage = endURLta.getText();
+                System.out.println("Target = " + targetURL + "\nStart = " + startPage + "\n\n");
 
-                targetURL = endURLta.getText();
+                Node origin = new Node(null, startPage);
+                Queue<Node> queue = new LinkedList<>();
+                for(String i: scrapePageForLinks(origin))
+                    queue.add(new Node(origin, i));
 
-                //findTarget(pURL, "", 2);
-                System.out.println("search ended");
+                ArrayList<String> discovered = new ArrayList<>();
+                discovered.add(origin.URL);
+
+                recursiveForwardBFS(queue, discovered);
             }
         }
     }
