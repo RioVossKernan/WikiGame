@@ -25,8 +25,6 @@ public class SwingGraphics implements ActionListener {
     private JTextField startURLta;
     private JTextField endURLta;
 
-    private API api = new API();
-
     public String targetURL;
 
     private int WIDTH=800;
@@ -108,7 +106,22 @@ public class SwingGraphics implements ActionListener {
         mainFrame.setVisible(true);
     }
 
-    public void recursiveForwardBFS(Queue<Node> q, ArrayList<String> discovered) {
+    public void printPath(Node child){
+        ta.setText("");
+        System.out.println("\nDONE\n\nPATH:");
+        ta.append("\nDONE\n\nPATH:\n");
+        //go up the family tree and print the path
+        Node parent = child.parent;
+        while(parent != null){
+            System.out.println(parent.URL);
+            ta.append(parent.URL + "\n");
+            parent = parent.parent;
+        }
+        System.out.println(targetURL);
+        ta.append(targetURL);
+    }
+
+    public void recursiveForwardBFS(Queue<Node> q, HashSet<String> discovered) {
         if (q.isEmpty()) { //terminate
             return;
         }
@@ -118,18 +131,7 @@ public class SwingGraphics implements ActionListener {
 
         if(v.URL.equalsIgnoreCase(targetURL)){
             //PRINT PATH
-            ta.setText("");
-            System.out.println("\nDONE\n\nPATH:");
-            ta.append("\nDONE\n\nPATH:\n");
-            //go up the family tree and print the path
-            Node parent = v.parent;
-            while(parent != null){
-                System.out.println(parent.URL);
-                ta.append(parent.URL + "\n");
-                parent = parent.parent;
-            }
-            System.out.println(targetURL);
-            ta.append(targetURL);
+            printPath(v);
 
             return; //terminate
 
@@ -149,7 +151,6 @@ public class SwingGraphics implements ActionListener {
 
         recursiveForwardBFS( q, discovered);
     }
-
 
     public ArrayList<String> scrapePageForLinks(Node page){
         ArrayList<String> links = new ArrayList<>();
@@ -186,7 +187,6 @@ public class SwingGraphics implements ActionListener {
         return links;
     }
 
-
     @Override
     public void actionPerformed(ActionEvent e) {
     }
@@ -208,7 +208,10 @@ public class SwingGraphics implements ActionListener {
                 for(String i: scrapePageForLinks(origin))
                     queue.add(new Node(origin, i));
 
-                ArrayList<String> discovered = new ArrayList<>();
+//                ArrayList<String> discovered = new ArrayList<>();
+//                discovered.add(origin.URL);
+
+                HashSet<String> discovered = new HashSet<String>();
                 discovered.add(origin.URL);
 
                 recursiveForwardBFS(queue, discovered);
